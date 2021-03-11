@@ -35,10 +35,10 @@
 #include "sensirion_uart_hal.h"
 #include "svm40_uart.h"
 
-/**
- * TO USE CONSOLE OUTPUT (PRINTF) AND PLATFORM
+/* TO USE CONSOLE OUTPUT (printf) YOU MAY NEED TO ADAPT THE
+ * INCLUDE ABOVE OR DEFINE IT ACCORDING TO YOUR PLATFORM.
+ * #define printf(...)
  */
-//#define printf(...)
 
 int main(void) {
     int16_t error = 0;
@@ -95,6 +95,16 @@ int main(void) {
         printf("Protocol: %i.%i\n", protocol_major, protocol_minor);
     }
 
+    float t_offset;
+    error = svm40_get_temperature_offset_for_rht_measurements(&t_offset);
+    if (error) {
+        printf("Error executing "
+               "svm40_get_temperature_offset_for_rht_measurements(): %i\n",
+               error);
+    } else {
+        printf("Temperature Offset: %0.2f °C\n", t_offset);
+    }
+
     // Start Measurement
     error = svm40_start_continuous_measurement();
     if (error) {
@@ -105,19 +115,18 @@ int main(void) {
     for (;;) {
         // Read Measurement
         sensirion_uart_hal_sleep_usec(1000000);
-        int16_t voc_index;
-        int16_t humidity;
-        int16_t temperature;
-        error = svm40_read_measured_values_as_integers(&voc_index, &humidity,
-                                                       &temperature);
+        float voc_index;
+        float humidity;
+        float temperature;
+        error = svm40_read_measured_values(&voc_index, &humidity, &temperature);
         if (error) {
             printf("Error executing svm40_read_measured_values_as_integers(): "
                    "%i\n",
                    error);
         } else {
-            printf("Voc index: %i\n", voc_index);
-            printf("Humidity: %i\n", humidity);
-            printf("Temperature: %i\n", temperature);
+            printf("Voc index: %0.1f\n", voc_index);
+            printf("Humidity: %0.2f %%RH\n", humidity);
+            printf("Temperature: %0.2f °C\n", temperature);
         }
     }
 

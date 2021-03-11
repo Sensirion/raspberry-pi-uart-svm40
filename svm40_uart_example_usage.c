@@ -1,9 +1,4 @@
 /*
- * SHDLC-Generator: 0.8.2
- * Yaml Version: 0.3.0
- * Template Version: 0.7.0
- */
-/*
  * Copyright (c) 2021, Sensirion AG
  * All rights reserved.
  *
@@ -45,8 +40,6 @@
  */
 //#define printf(...)
 
-// TODO: DRIVER_GENERATOR Add missing commands and make prints more pretty
-
 int main(void) {
     int16_t error = 0;
 
@@ -56,33 +49,27 @@ int main(void) {
         return error;
     }
 
-    unsigned char serial_number[255];
-    uint8_t serial_number_size = 255;
-
-    error = svm40_get_serial_number(serial_number, serial_number_size);
-
+    uint8_t serial_number[32];
+    uint8_t serial_number_size = 32;
+    error = svm40_get_serial_number(&serial_number[0], serial_number_size);
     if (error) {
         printf("Error executing svm40_get_serial_number(): %i\n", error);
     } else {
         printf("Serial number: %s\n", serial_number);
     }
 
-    unsigned char product_type[255];
-    uint8_t product_type_size = 255;
-
-    error = svm40_get_product_type(product_type, product_type_size);
-
+    uint8_t product_type[32];
+    uint8_t product_type_size = 32;
+    error = svm40_get_product_type(&product_type[0], product_type_size);
     if (error) {
         printf("Error executing svm40_get_product_type(): %i\n", error);
     } else {
         printf("Product type: %s\n", product_type);
     }
 
-    unsigned char product_name[255];
-    uint8_t product_name_size = 255;
-
-    error = svm40_get_product_name(product_name, product_name_size);
-
+    uint8_t product_name[32];
+    uint8_t product_name_size = 32;
+    error = svm40_get_product_name(&product_name[0], product_name_size);
     if (error) {
         printf("Error executing svm40_get_product_name(): %i\n", error);
     } else {
@@ -96,27 +83,20 @@ int main(void) {
     uint8_t hardware_minor;
     uint8_t protocol_major;
     uint8_t protocol_minor;
-
     error = svm40_get_version(&firmware_major, &firmware_minor, &firmware_debug,
                               &hardware_major, &hardware_minor, &protocol_major,
                               &protocol_minor);
-
     if (error) {
         printf("Error executing svm40_get_version(): %i\n", error);
     } else {
-        printf("Firmware major: %u\n", firmware_major);
-        printf("Firmware minor: %u\n", firmware_minor);
-        printf("Firmware debug: %i\n", firmware_debug);
-        printf("Hardware major: %u\n", hardware_major);
-        printf("Hardware minor: %u\n", hardware_minor);
-        printf("Protocol major: %u\n", protocol_major);
-        printf("Protocol minor: %u\n", protocol_minor);
+        printf("Firmware: %i.%i Debug: %i\n", firmware_major, firmware_minor,
+               firmware_debug);
+        printf("Hardware: %i.%i\n", hardware_major, hardware_minor);
+        printf("Protocol: %i.%i\n", protocol_major, protocol_minor);
     }
 
     // Start Measurement
-
     error = svm40_start_continuous_measurement();
-
     if (error) {
         printf("Error executing svm40_start_continuous_measurement(): %i\n",
                error);
@@ -124,14 +104,24 @@ int main(void) {
 
     for (;;) {
         // Read Measurement
-        // TODO: DRIVER_GENERATOR check and update measurement interval
         sensirion_uart_hal_sleep_usec(1000000);
-        // TODO: DRIVER_GENERATOR Add scale and offset to printed measurement
-        // values
+        int16_t voc_index;
+        int16_t humidity;
+        int16_t temperature;
+        error = svm40_read_measured_values_as_integers(&voc_index, &humidity,
+                                                       &temperature);
+        if (error) {
+            printf("Error executing svm40_read_measured_values_as_integers(): "
+                   "%i\n",
+                   error);
+        } else {
+            printf("Voc index: %i\n", voc_index);
+            printf("Humidity: %i\n", humidity);
+            printf("Temperature: %i\n", temperature);
+        }
     }
 
     error = svm40_stop_measurement();
-
     if (error) {
         printf("Error executing svm40_stop_measurement(): %i\n", error);
     }

@@ -375,20 +375,6 @@ int16_t svm40_device_reset(void);
  */
 int16_t svm40_get_system_up_time(uint32_t* system_up_time);
 
-/**
- * svm40_enter_bootloader() - Command to enter into the bootloader mode. The
- * device will reboot into bootloader mode and wait until the new Firmware is
- * received (start update command expected). Even after a power reset, the
- * device returns into bootloader mode. The response frame is sent before the
- * reset.
- *
- * @note After the response frame is received, the device will not accept new
- * commands until fully booted (wait at least 1 s).
- *
- * @return 0 on success, an error code otherwise
- */
-int16_t svm40_enter_bootloader(void);
-
 #ifdef __cplusplus
 }
 #endif

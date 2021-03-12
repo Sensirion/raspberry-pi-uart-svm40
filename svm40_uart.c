@@ -512,27 +512,3 @@ int16_t svm40_get_system_up_time(uint32_t* system_up_time) {
     *system_up_time = sensirion_common_bytes_to_uint32_t(&buffer[0]);
     return NO_ERROR;
 }
-
-int16_t svm40_enter_bootloader(void) {
-    struct sensirion_shdlc_rx_header header;
-    uint8_t buffer[12];
-    struct sensirion_shdlc_buffer frame;
-    sensirion_shdlc_begin_frame(&frame, &buffer[0], 0xF3, SVM40_UART_ADDRESS,
-                                0);
-    sensirion_shdlc_add_uint8_t_to_frame(&frame, 0x00);
-
-    sensirion_shdlc_finish_frame(&frame);
-    int16_t error = sensirion_shdlc_tx_frame(&frame);
-    if (error) {
-        return error;
-    }
-
-    sensirion_uart_hal_sleep_usec(50000);
-
-    error = sensirion_shdlc_rx_inplace(&frame, 0, &header);
-    if (error) {
-        return error;
-    }
-    sensirion_uart_hal_sleep_usec(1000000);
-    return NO_ERROR;
-}

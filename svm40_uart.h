@@ -161,7 +161,7 @@ svm40_get_temperature_offset_for_rht_measurements_raw(uint8_t* t_offset,
  * svm40_get_temperature_offset_for_rht_measurements() - Gets the T-Offset for
  * the temperature compensation of the RHT algorithm.
  *
- * @note Only SVM40 firmeare versions >= 2.0 are supported. Please update your
+ * @note Only SVM40 firmware versions >= 2.0 are supported. Please update your
  * SVM40 module if necessary.
  *
  * @param t_offset Temperature offset as float in degrees celsius.

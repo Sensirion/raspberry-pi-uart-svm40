@@ -142,20 +142,17 @@ int16_t svm40_read_measured_values_as_integers_with_raw_parameters(
     uint16_t* raw_voc_ticks, int16_t* raw_humidity, int16_t* raw_temperature);
 
 /**
- * svm40_get_temperature_offset_for_rht_measurements_raw() - Gets the T-Offset
- * for the temperature compensation of the RHT algorithm.
+ * svm40_get_temperature_offset_for_rht_measurements() - Gets the T-Offset for
+ * the temperature compensation of the RHT algorithm.
  *
  * @param t_offset Temperature offset which is used for the RHT measurements.
- * Firmware versions prior to 2.0 will return a float value (4 bytes). For
- * firmware version >= 2.0 an int16 value (2 bytes) is returned. Float
- * temperature values are in degrees celsius with no scaling. Integer
- * temperature values are in degrees celsius with a scaling of 200.
+ * Only applicable for firmware version >= 2.0: an int16 value (2 bytes) is
+ * returned. The value represents the temperature offset * 200.
  *
  * @return 0 on success, an error code otherwise
  */
 int16_t
-svm40_get_temperature_offset_for_rht_measurements_raw(uint8_t* t_offset,
-                                                      uint8_t t_offset_size);
+svm40_get_temperature_offset_for_rht_measurements_raw(int16_t* t_offset);
 
 /**
  * svm40_get_temperature_offset_for_rht_measurements() - Gets the T-Offset for
@@ -220,8 +217,7 @@ int16_t svm40_store_nv_data(void);
  *
  * @return 0 on success, an error code otherwise
  */
-int16_t
-svm40_set_temperature_offset_for_rht_measurements_raw(const int16_t t_offset);
+int16_t svm40_set_temperature_offset_for_rht_measurements_raw(int16_t t_offset);
 
 /**
  * svm40_set_temperature_offset_for_rht_measurements() - Sets the T-Offset for
@@ -235,7 +231,7 @@ svm40_set_temperature_offset_for_rht_measurements_raw(const int16_t t_offset);
  *
  * @return 0 on success, an error code otherwise
  */
-int16_t svm40_set_temperature_offset_for_rht_measurements(const float t_offset);
+int16_t svm40_set_temperature_offset_for_rht_measurements(float t_offset);
 
 /**
  * svm40_set_voc_tuning_parameters() - Sets parameters to customize the VOC

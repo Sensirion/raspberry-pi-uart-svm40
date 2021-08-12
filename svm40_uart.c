@@ -162,8 +162,7 @@ int16_t svm40_read_measured_values_as_integers_with_raw_parameters(
 }
 
 int16_t
-svm40_get_temperature_offset_for_rht_measurements_raw(uint8_t* t_offset,
-                                                      uint8_t t_offset_size) {
+svm40_get_temperature_offset_for_rht_measurements_raw(int16_t* t_offset) {
     struct sensirion_shdlc_rx_header header;
     uint8_t buffer[20];
     struct sensirion_shdlc_buffer frame;
@@ -183,22 +182,21 @@ svm40_get_temperature_offset_for_rht_measurements_raw(uint8_t* t_offset,
     if (error) {
         return error;
     }
-    sensirion_common_copy_bytes(&buffer[0], t_offset, t_offset_size);
+    *t_offset = sensirion_common_bytes_to_int16_t(buffer);
     return NO_ERROR;
 }
 
 int16_t svm40_get_temperature_offset_for_rht_measurements(float* t_offset) {
     int16_t error;
-    uint8_t t_offset_raw[2];
-    uint8_t t_offset_size = 2;
+    int16_t t_offset_raw;
 
-    error = svm40_get_temperature_offset_for_rht_measurements_raw(
-        t_offset_raw, t_offset_size);
+    error =
+        svm40_get_temperature_offset_for_rht_measurements_raw(&t_offset_raw);
     if (error) {
         return error;
     }
 
-    *t_offset = sensirion_common_bytes_to_int16_t(t_offset_raw) / 200.0f;
+    *t_offset = t_offset_raw / 200.0f;
 
     return NO_ERROR;
 }
